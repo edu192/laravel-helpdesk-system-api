@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
-use App\Models\Comment;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class TicketController extends Controller
 {
@@ -41,7 +42,19 @@ class TicketController extends Controller
 
     public function index(Request $request)
     {
-        $tickets = Ticket::all();
+        $tickets = QueryBuilder::for(Ticket::class)
+            ->allowedFilters([
+                AllowedFilter::scope('assigned_status'),
+                AllowedFilter::scope('assigned_agent'),
+                'id',
+                'title',
+                'description',
+                'status',
+                'priority',
+                'user_id',
+                'category_id',
+            ])->allowedIncludes(['comments', 'assigned_agent', 'category', 'files'])
+            ->get();
         return response()->json($tickets);
     }
 

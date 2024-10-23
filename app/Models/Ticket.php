@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -50,5 +51,35 @@ class Ticket extends Model
     : HasMany
     {
         return $this->hasMany(File::class, 'ticket_id');
+    }
+
+    public function scopeAssignedStatus(Builder $query, bool $assigned)
+    : Builder
+    {
+        if ($assigned) {
+            return $query->whereHas('assigned_agent');
+        } else {
+            return $query->whereDoesntHave('assigned_agent');
+        }
+    }
+
+    public function scopeAssignedAgent(Builder $query, $agentId)
+    : Builder
+    {
+        return $query->whereHas('assigned_agent', function ($query) use ($agentId) {
+            $query->where('user_id', $agentId);
+        });
+    }
+
+    public function scopeAssigned(Builder $query)
+    : Builder
+    {
+        return $query->whereHas('assigned_agent');
+    }
+
+    public function scopeUnassigned(Builder $query)
+    : Builder
+    {
+        return $query->whereDoesntHave('assigned_agent');
     }
 }
