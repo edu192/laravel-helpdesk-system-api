@@ -3,38 +3,61 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Comment;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
 
 class TicketController extends Controller
 {
-    public function index()
+//    public function index()
+//    {
+//        return view('backend.ticket.index');
+//    }
+//
+//    public function assigned_tickets()
+//    {
+//        return view('backend.ticket.agent.index');
+//    }
+//
+//    public function view(Ticket $ticket)
+//    {
+//        return view('backend.ticket.comments', compact('ticket'));
+//    }
+//    public function post_comment(Request $request, Ticket $ticket)
+//    {
+//        $this->authorize('post_comment', $ticket);
+//        $request->validate([
+//            'comment' => 'required|string|min:5,max:255'
+//        ]);
+//        $ticket->comments()->create([
+//            'description' => $request->comment,
+//            'user_id' => auth()->user()->id
+//        ]);
+//        return back();
+//    }
+//    public function unassigned(){
+//        return view('backend.ticket.unassigned-table');
+//    }
+
+    public function index(Request $request)
     {
-        return view('backend.ticket.index');
+        $tickets = Ticket::all();
+        return response()->json($tickets);
     }
 
-    public function assigned_tickets()
+    public function show(Request $request, Ticket $ticket)
     {
-        return view('backend.ticket.agent.index');
+        return response()->json($ticket);
     }
 
-    public function view(Ticket $ticket)
+    public function update(Request $request, Ticket $ticket)
     {
-        return view('backend.ticket.comments', compact('ticket'));
-    }
-    public function post_comment(Request $request, Ticket $ticket)
-    {
-        $this->authorize('post_comment', $ticket);
         $request->validate([
-            'comment' => 'required|string|min:5,max:255'
+            'status' => ['required', 'integer', 'between:0,2'],
         ]);
-        $ticket->comments()->create([
-            'description' => $request->comment,
-            'user_id' => auth()->user()->id
+        $ticket->update([
+            'status' => $request->status
         ]);
-        return back();
-    }
-    public function unassigned(){
-        return view('backend.ticket.unassigned-table');
+        return response()->json(['message' => 'Ticket updated successfully', 'ticket' => $ticket]);
     }
 }
