@@ -34,7 +34,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         });
     });
     //Backend routes
-    Route::group(['prefix' => 'support', 'as' => 'support.'], function () {
+    Route::group(['prefix' => 'support','middleware' => 'backend', 'as' => 'support.'], function () {
         //Ticket routes
         Route::group(['prefix' => 'tickets', 'as' => 'ticket.'], function () {
             Route::get('/', [BackendTicketController::class, 'index'])->name('index');
