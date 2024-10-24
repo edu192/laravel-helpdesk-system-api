@@ -25,28 +25,32 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
             Route::put('/{ticket}', [TicketController::class, 'update'])->name('update');
             Route::delete('/{ticket}', [TicketController::class, 'destroy'])->name('destroy');
 
-            //Ticket comments routes
-            Route::group(['prefix' => '{ticket}/comments', 'as' => 'comment.'], function () {
-                Route::get('/', [CommentController::class, 'index'])->name('index');
-                Route::post('/', [CommentController::class, 'store'])->name('store');
-                Route::get('/{comment}', [CommentController::class, 'show'])->name('show');
-                Route::put('/{comment}', [CommentController::class, 'update'])->name('update');
-                Route::delete('/{comment}', [CommentController::class, 'destroy'])->name('destroy');
+            //SUB ROUTES
+            Route::middleware(['ticket.resources.access:user'])->group(function (){
 
-                Route::group(['prefix' => '{comment}/files', 'as' => 'file.'], function () {
-                    Route::get('/', [FrontendCommentMediaController::class, 'index'])->name('index');
-                    Route::post('/', [FrontendCommentMediaController::class, 'store'])->name('store');
-                    Route::get('/{media}', [FrontendCommentMediaController::class, 'show'])->name('show');
-                    Route::delete('/{media}', [FrontendCommentMediaController::class, 'destroy'])->name('destroy');
+                //Ticket comments routes
+                Route::group(['prefix' => '{ticket}/comments', 'as' => 'comment.'], function () {
+                    Route::get('/', [CommentController::class, 'index'])->name('index');
+                    Route::post('/', [CommentController::class, 'store'])->name('store');
+                    Route::get('/{comment}', [CommentController::class, 'show'])->name('show');
+                    Route::put('/{comment}', [CommentController::class, 'update'])->name('update');
+                    Route::delete('/{comment}', [CommentController::class, 'destroy'])->name('destroy');
+
+                    Route::group(['prefix' => '{comment}/files', 'as' => 'file.'], function () {
+                        Route::get('/', [FrontendCommentMediaController::class, 'index'])->name('index');
+                        Route::post('/', [FrontendCommentMediaController::class, 'store'])->name('store');
+                        Route::get('/{media}', [FrontendCommentMediaController::class, 'show'])->name('show');
+                        Route::delete('/{media}', [FrontendCommentMediaController::class, 'destroy'])->name('destroy');
+                    });
                 });
-            });
 
-            //File routes
-            Route::group(['prefix' => '{ticket}/files', 'as' => 'file.'], function () {
-                Route::get('/', [MediaController::class, 'index'])->name('index');
-                Route::post('/', [MediaController::class, 'store'])->name('store');
-                Route::get('/{media}', [MediaController::class, 'show'])->name('show');
-                Route::delete('/{media}', [MediaController::class, 'destroy'])->name('destroy');
+                //File routes
+                Route::group(['prefix' => '{ticket}/files', 'as' => 'file.'], function () {
+                    Route::get('/', [MediaController::class, 'index'])->name('index');
+                    Route::post('/', [MediaController::class, 'store'])->name('store');
+                    Route::get('/{media}', [MediaController::class, 'show'])->name('show');
+                    Route::delete('/{media}', [MediaController::class, 'destroy'])->name('destroy');
+                });
             });
         });
     });
@@ -57,14 +61,19 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
             Route::get('/', [BackendTicketController::class, 'index'])->name('index');
             Route::get('/{ticket}', [BackendTicketController::class, 'show'])->name('show');
             Route::put('/{ticket}', [BackendTicketController::class, 'update'])->name('update');
-            //Ticket comments routes
-            Route::group(['prefix' => '{ticket}/comments', 'as' => 'comment.'], function () {
-                Route::get('/', [BackendCommentController::class, 'index'])->name('index');
-                Route::post('/', [BackendCommentController::class, 'store'])->name('store');
-                Route::get('/{comment}', [BackendCommentController::class, 'show'])->name('show');
-                Route::put('/{comment}', [BackendCommentController::class, 'update'])->name('update');
-                Route::delete('/{comment}', [BackendCommentController::class, 'destroy'])->name('destroy');
+            //SUB ROUTES
+            Route::middleware(['ticket.resources.access:backend'])->group(function (){
+
+                //Ticket comments routes
+                Route::group(['prefix' => '{ticket}/comments', 'as' => 'comment.'], function () {
+                    Route::get('/', [BackendCommentController::class, 'index'])->name('index');
+                    Route::post('/', [BackendCommentController::class, 'store'])->name('store');
+                    Route::get('/{comment}', [BackendCommentController::class, 'show'])->name('show');
+                    Route::put('/{comment}', [BackendCommentController::class, 'update'])->name('update');
+                    Route::delete('/{comment}', [BackendCommentController::class, 'destroy'])->name('destroy');
+                });
             });
+
         });
     });
 });

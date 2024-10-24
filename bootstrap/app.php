@@ -22,6 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'verified' => \App\Http\Middleware\EnsureEmailIsVerified::class,
             'backend'=> \App\Http\Middleware\BackendMiddleware::class,
+            'ticket.resources.access' => \App\Http\Middleware\TicketResourcesAccessMiddleware::class,
         ]);
 
         //
