@@ -33,7 +33,10 @@ class CommentController extends Controller
 
     public function show(Request $request, Ticket $ticket, Comment $comment)
     {
-        return response()->json($comment);
+        if ($ticket->comments()->find($comment->id)) {
+            return response()->json($comment);
+        }
+        return response()->json(['message' => 'Comment not found for this ticket']);
     }
 
     public function update(Request $request, Ticket $ticket, Comment $comment)
@@ -41,6 +44,9 @@ class CommentController extends Controller
         $request->validate([
             'comment' => ['required', 'string', 'min:5', 'max:255']
         ]);
+        if ($ticket->comments()->find($comment->id) === null) {
+            return response()->json(['message' => 'Comment not found for this ticket']);
+        }
         $comment->update([
             'description' => $request->comment
         ]);
@@ -49,6 +55,9 @@ class CommentController extends Controller
 
     public function destroy(Request $request, Ticket $ticket, Comment $comment)
     {
+        if ($ticket->comments()->find($comment->id) === null) {
+            return response()->json(['message' => 'Comment not found for this ticket']);
+        }
         $comment->delete();
         return response()->json(['message' => 'Comment deleted successfully']);
     }
