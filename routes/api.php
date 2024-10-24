@@ -4,6 +4,7 @@ use App\Http\Controllers\Backend\CommentController as BackendCommentController;
 use App\Http\Controllers\Backend\TicketController as BackendTicketController;
 use App\Http\Controllers\Frontend\Ticket\Comment\CommentController;
 use App\Http\Controllers\Frontend\Ticket\MediaController;
+use App\Http\Controllers\Frontend\Ticket\Comment\MediaController as FrontendCommentMediaController;
 use App\Http\Controllers\Frontend\Ticket\TicketController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -31,6 +32,13 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
                 Route::get('/{comment}', [CommentController::class, 'show'])->name('show');
                 Route::put('/{comment}', [CommentController::class, 'update'])->name('update');
                 Route::delete('/{comment}', [CommentController::class, 'destroy'])->name('destroy');
+
+                Route::group(['prefix' => '{comment}/files', 'as' => 'file.'], function () {
+                    Route::get('/', [FrontendCommentMediaController::class, 'index'])->name('index');
+                    Route::post('/', [FrontendCommentMediaController::class, 'store'])->name('store');
+                    Route::get('/{media}', [FrontendCommentMediaController::class, 'show'])->name('show');
+                    Route::delete('/{media}', [FrontendCommentMediaController::class, 'destroy'])->name('destroy');
+                });
             });
 
             //File routes
