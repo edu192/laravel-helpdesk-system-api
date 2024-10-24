@@ -13,6 +13,8 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
 });
 Route::group(['middleware' => 'auth:sanctum'], function () {
+    Route::get('/departments',\App\Http\Controllers\Frontend\DepartmentController::class);
+    Route::get('/categories',\App\Http\Controllers\Frontend\CategoryController::class);
     //Auth user routes
     Route::group(['as' => 'user.'], function () {
 
