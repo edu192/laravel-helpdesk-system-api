@@ -5,12 +5,19 @@ namespace App\Http\Controllers\Frontend\Ticket;
 use App\Http\Controllers\Controller;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class MediaController extends Controller
 {
     public function index(Ticket $ticket)
     {
+        if ($ticket->user_id !== auth()->user()->id) {
+            return response()->json([
+                'message' => 'You are not allowed to view files for this ticket.',
+            ], 403);
+        }
+
         $mediaFiles = $ticket->getMedia('files');
 
         return response()->json([
@@ -23,7 +30,11 @@ class MediaController extends Controller
         $request->validate([
             'files.*' => 'required|file|mimes:jpeg,png,jpg,pdf|max:2048',
         ]);
-
+        if ($ticket->user_id !== auth()->user()->id) {
+            return response()->json([
+                'message' => 'You are not allowed to upload files for this ticket.',
+            ], 403);
+        }
         try {
             $ticket->addAllMediaFromRequest()->each(function ($fileAdder) {
                 $fileAdder->toMediaCollection('files');
@@ -41,6 +52,11 @@ class MediaController extends Controller
 
     public function show(Request $request, Ticket $ticket, Media $media)
     {
+        if (Gate::denies('media_model_type_ownership', $media)) {
+            return response()->json([
+                'message' => 'You are not allowed to view files for this ticket.',
+            ], 403);
+        }
         if ($media->model_id !== $ticket->id || $media->model_type !== Ticket::class) {
             return response()->json([
                 'message' => 'Media not found for this ticket.',
@@ -55,6 +71,11 @@ class MediaController extends Controller
 
     public function destroy(Ticket $ticket, Media $media)
     {
+        if (Gate::denies('media_model_type_ownership', $media)) {
+            return response()->json([
+                'message' => 'You are not allowed to delete files for this ticket.',
+            ], 403);
+        }
         if ($media->model_id !== $ticket->id || $media->model_type !== Ticket::class) {
             return response()->json([
                 'message' => 'Media not found for this ticket.',
