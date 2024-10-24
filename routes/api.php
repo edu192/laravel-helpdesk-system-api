@@ -2,9 +2,9 @@
 
 use App\Http\Controllers\Backend\CommentController as BackendCommentController;
 use App\Http\Controllers\Backend\TicketController as BackendTicketController;
-use App\Http\Controllers\Frontend\CommentController;
-use App\Http\Controllers\Frontend\MediaController;
-use App\Http\Controllers\Frontend\TicketController;
+use App\Http\Controllers\Frontend\Ticket\Comment\CommentController;
+use App\Http\Controllers\Frontend\Ticket\MediaController;
+use App\Http\Controllers\Frontend\Ticket\TicketController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
