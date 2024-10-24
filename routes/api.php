@@ -3,6 +3,7 @@
 use App\Http\Controllers\Backend\CommentController as BackendCommentController;
 use App\Http\Controllers\Backend\TicketController as BackendTicketController;
 use App\Http\Controllers\Frontend\CommentController;
+use App\Http\Controllers\Frontend\MediaController;
 use App\Http\Controllers\Frontend\TicketController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -30,6 +31,14 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
                 Route::get('/{comment}', [CommentController::class, 'show'])->name('show');
                 Route::put('/{comment}', [CommentController::class, 'update'])->name('update');
                 Route::delete('/{comment}', [CommentController::class, 'destroy'])->name('destroy');
+            });
+
+            //File routes
+            Route::group(['prefix' => '{ticket}/files', 'as' => 'file.'], function () {
+                Route::get('/', [MediaController::class, 'index'])->name('index');
+                Route::post('/', [MediaController::class, 'store'])->name('store');
+                Route::get('/{media}', [MediaController::class, 'show'])->name('show');
+                Route::delete('/{media}', [MediaController::class, 'destroy'])->name('destroy');
             });
         });
     });
