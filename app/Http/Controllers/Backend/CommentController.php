@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backend;
 
+use App\Events\TicketStatusChangedEvent;
 use App\Http\Controllers\Controller;
 use App\Models\Comment;
 use App\Models\Ticket;
@@ -25,6 +26,12 @@ class CommentController extends Controller
             'user_id' => auth()->user()->id,
             'ticket_id' => $ticket->id
         ]);
+        if (!$ticket->assigned_agent()->where('user_id', auth()->user()->id)->exists()) {
+            $ticket->assigned_agent()->attach(auth()->user()->id);
+        }
+        $ticket->status = 1;
+        $ticket->save();
+        event(new TicketStatusChangedEvent($ticket));
         return response()->json(['message' => 'Comment created successfully', 'comment' => $comment]);
     }
 
