@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Frontend\Ticket;
 
+use App\Events\TicketStatusChangedEvent;
 use App\Http\Controllers\Controller;
 use App\Models\Ticket;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -46,6 +47,7 @@ class TicketController extends Controller
             'user_id' => auth()->user()->id,
             'category_id' => $request->category_id
         ]);
+        event(new TicketStatusChangedEvent($ticket));
         return response()->json(['message' => 'Ticket created successfully', 'ticket' => $ticket]);
     }
 
