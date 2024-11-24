@@ -60,6 +60,10 @@ class TicketController extends Controller
 
     public function show(Request $request, Ticket $ticket)
     {
+        $ticket = QueryBuilder::for(Ticket::class)
+            ->allowedIncludes(['comments', 'assigned_agent', 'category', 'files'])
+            ->where('id', $ticket->id)
+            ->first();
         return response()->json($ticket);
     }
 
