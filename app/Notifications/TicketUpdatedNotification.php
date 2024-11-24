@@ -25,7 +25,7 @@ class TicketUpdatedNotification extends Notification
     {
         return (new MailMessage)
             ->subject($this->subject)
-            ->greeting('Greetings!')
+            ->greeting('Hola!')
             ->line($this->message)
             ->action('View', url($this->url));
     }
